@@ -10,7 +10,29 @@ if (isset($_SESSION["user_id"])) {
 $page_title = "Log In";
 $error = "";
 
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $email = trim($_POST["email"] ?? "");
+    $password = $_POST["password"] ?? "";
 
+    // This page is student-only. Enforce role = 'student' server-side.
+    $role = 'student';
+    $stmt = $conn->prepare("SELECT user_id, name, role, password_hash FROM users WHERE email = ? AND role = ?");
+    $stmt->bind_param("ss", $email, $role);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $user = $result->fetch_assoc();
+
+    if ($user && password_verify($password, $user["password_hash"])) {
+        session_regenerate_id(true);
+        $_SESSION["user_id"] = $user["user_id"];
+        $_SESSION["name"] = $user["name"];
+        $_SESSION["role"] = $user["role"];
+        header("Location: dashboard.php");
+        exit;
+    } else {
+        $error = "Email or password is incorrect for a student account.";
+    }
+}
 
 require_once "includes/header.php";
 ?>
