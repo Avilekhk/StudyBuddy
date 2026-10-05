@@ -2,20 +2,19 @@
 session_start();
 require_once "includes/db.php";
 
-if (isset($_SESSION["user_id"])) {
+if (isset($_SESSION["user_id"]) && $_SESSION["role"] === "tutor") {
     header("Location: dashboard.php");
     exit;
 }
 
-$page_title = "Log In";
+$page_title = "Tutor Log In";
 $error = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $email = trim($_POST["email"] ?? "");
     $password = $_POST["password"] ?? "";
 
-    // This page is student-only. Enforce role = 'student' server-side.
-    $role = 'student';
+    $role = 'tutor';
     $stmt = $conn->prepare("SELECT user_id, name, role, password_hash FROM users WHERE email = ? AND role = ?");
     $stmt->bind_param("ss", $email, $role);
     $stmt->execute();
@@ -30,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         header("Location: dashboard.php");
         exit;
     } else {
-        $error = "Email or password is incorrect for a student account.";
+        $error = "Email or password is incorrect for tutor account.";
     }
 }
 
@@ -38,26 +37,16 @@ require_once "includes/header.php";
 ?>
 <section class="page-header">
     <div class="container">
-        <h1>Log In</h1>
-        <p>Access your StudyBuddy dashboard.</p>
+        <h1>Tutor Log In</h1>
+        <p>Access your tutor dashboard.</p>
     </div>
 </section>
 
 <section class="section">
     <div class="container">
-        <div class="form-box login-split">
+        <div class="form-box">
             <?php if ($error): ?><div class="message error"><?php echo htmlspecialchars($error); ?></div><?php endif; ?>
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-                <div>
-                    <strong>Student login</strong>
-                </div>
-                <div>
-                    <a class="button" href="tutor_login.php">Are you a tutor?</a>
-                </div>
-            </div>
-
-            <form method="post" class="form-box" id="login-form" style="padding:20px;">
-                <input type="hidden" name="role" value="student">
+            <form method="post">
                 <div class="form-group">
                     <label for="login-email">Email</label>
                     <input type="email" id="login-email" name="email" required>
@@ -67,12 +56,11 @@ require_once "includes/header.php";
                     <input type="password" id="login-password" name="password" required>
                 </div>
                 <div class="form-group">
-                    <button class="button" id="login-submit" type="submit">Log In</button>
+                    <button class="button" type="submit">Log In as Tutor</button>
                 </div>
             </form>
-            <p class="small">Do not have an account? <a href="register.php">Register here</a>.</p>
+            <p class="small">Not a tutor? <a href="login.php">Student login</a>.</p>
         </div>
     </div>
 </section>
-<?php require_once "includes/footer.php"; 
-?>
+<?php require_once "includes/footer.php"; ?>

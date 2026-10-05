@@ -10,4 +10,24 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     });
+
+    // Dashboard tab switching (client-side): show panels without reload
+    const tabs = document.querySelectorAll('.dashboard-tab');
+    const panels = document.querySelectorAll('[data-tab-panel]');
+    tabs.forEach(function (tab) {
+        tab.addEventListener('click', function () {
+            const target = tab.getAttribute('data-tab-target');
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            panels.forEach(function (panel) {
+                if (panel.getAttribute('data-tab-panel') === target) {
+                    panel.classList.add('active');
+                } else {
+                    panel.classList.remove('active');
+                }
+            });
+        });
+    });
+
+    // No global login role toggle here — student login is the default page.
 });

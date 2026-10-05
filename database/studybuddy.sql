@@ -40,6 +40,34 @@ CREATE TABLE bookings (
     FOREIGN KEY (slot_id) REFERENCES availability(slot_id) ON DELETE CASCADE
 );
 
+CREATE TABLE notifications (
+    notification_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    booking_id INT DEFAULT NULL,
+    type VARCHAR(50) NOT NULL,
+    title VARCHAR(150) NOT NULL,
+    message VARCHAR(255) NOT NULL,
+    is_read TINYINT(1) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_notifications_user_read (user_id, is_read),
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (booking_id) REFERENCES bookings(booking_id) ON DELETE SET NULL
+);
+
+CREATE TABLE student_requests (
+    request_id INT AUTO_INCREMENT PRIMARY KEY,
+    student_id INT NOT NULL,
+    subject_id INT NOT NULL,
+    day_time DATETIME NOT NULL,
+    notes VARCHAR(255) DEFAULT NULL,
+    status ENUM('open','matched','cancelled') DEFAULT 'open',
+    matched_slot_id INT DEFAULT NULL,
+    matched_tutor_id INT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (student_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (subject_id) REFERENCES subjects(subject_id) ON DELETE RESTRICT
+);
+
 INSERT INTO subjects (subject_name, description) VALUES
 ('Web Development', 'HTML, CSS, JavaScript and basic web development.'),
 ('PHP Programming', 'PHP programming and server-side web development.'),

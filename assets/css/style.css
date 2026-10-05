@@ -177,6 +177,42 @@ nav a {
     margin-bottom: 35px;
 }
 
+.dashboard-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.dashboard-tab {
+    background: #eef3f7;
+    border: 1px solid #dce3ea;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.dashboard-tab.active {
+    background: #1769aa;
+    color: #fff;
+}
+
+.tab-badge {
+    background: #b33a3a;
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    margin-left: 8px;
+}
+
+.dashboard-panels .dashboard-panel { display: none; }
+.dashboard-panels .dashboard-panel.active { display: block; }
+
+.notification-card { background: #fff; border: 1px solid #dce3ea; padding: 12px; border-radius: 6px; margin-bottom: 12px; }
+.notification-card.unread { background: #f4fbff; }
+.notification-head { display: flex; justify-content: space-between; align-items: center; }
+.inline-actions { display: inline; }
+
 .form-group {
     margin-bottom: 18px;
 }
@@ -322,3 +358,16 @@ th {
         font-size: 34px;
     }
 }
+
+.login-split .login-columns {
+    display: flex;
+    gap: 18px;
+}
+
+.login-column { flex: 1; }
+
+@media (max-width: 700px) {
+    .login-split .login-columns { flex-direction: column; }
+}
+
+.login-column.hidden { display: none; }

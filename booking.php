@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once "includes/db.php";
+require_once "includes/notifications.php";
 
 if (!isset($_SESSION["user_id"])) {
     header("Location: login.php");
@@ -18,6 +19,12 @@ $error = "";
 $message = "";
 
 $stmt = $conn->prepare("
+    SELECT a.slot_id, a.tutor_id, a.day_time, a.is_booked, u.name AS tutor_name, s.subject_name
+    FROM availability a
+    INNER JOIN users u ON a.tutor_id = u.user_id
+    INNER JOIN subjects s ON a.subject_id = s.subject_id
+    WHERE a.slot_id = ?
+");
     SELECT a.slot_id, a.day_time, a.is_booked, u.name AS tutor_name, s.subject_name
     FROM availability a
     INNER JOIN users u ON a.tutor_id = u.user_id
@@ -48,10 +55,34 @@ if (!$slot) {
         $book = $conn->prepare("INSERT INTO bookings (student_id, slot_id, status) VALUES (?, ?, 'pending')");
         $book->bind_param("ii", $_SESSION["user_id"], $slot_id);
         $book->execute();
+        $booking_id = $conn->insert_id;
 
         $update = $conn->prepare("UPDATE availability SET is_booked = 1 WHERE slot_id = ?");
         $update->bind_param("i", $slot_id);
         $update->execute();
+
+        $student_stmt = $conn->prepare("SELECT name FROM users WHERE user_id = ?");
+        $student_stmt->bind_param("i", $_SESSION["user_id"]);
+        $student_stmt->execute();
+        $student = $student_stmt->get_result()->fetch_assoc();
+
+        add_notification(
+            $conn,
+            (int)$slot["tutor_id"],
+            "booking_request",
+            "New booking request",
+            ($student["name"] ?? "A student") . " requested " . $slot["subject_name"] . " on " . date("d M Y, g:i A", strtotime($slot["day_time"])),
+            $booking_id
+        );
+
+        add_notification(
+            $conn,
+            (int)$_SESSION["user_id"],
+            "booking_request_sent",
+            "Booking request sent",
+            "Your request for " . $slot["subject_name"] . " has been sent to " . $slot["tutor_name"] . ".",
+            $booking_id
+        );
 
         $conn->commit();
         $message = "Your booking request has been submitted.";
