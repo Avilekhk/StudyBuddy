@@ -15,16 +15,13 @@ require_once "includes/header.php";
             <article class="card">
                 <h3>The problem</h3>
                 <p>
-                    Students often find peer tutors through word-of-mouth, group conversations
-                    or noticeboards. This makes it difficult to know who can help and when they are available.
-                </p>
+                    Most of the time, students get to hear about peer tutors through hearsay or by asking around within groups. </p>
             </article>
             <article class="card">
                 <h3>Our solution</h3>
                 <p>
-                    StudyBuddy brings tutor profiles, subjects, availability and bookings into
-                    one shared web system.
-                </p>
+                    StudyBuddy integrates tutor profile, subject, schedule and booking details into
+                    a common web-based platform. </p>
             </article>
             <article class="card">
                 <h3>Our goal</h3>
